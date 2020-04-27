@@ -15,6 +15,8 @@ from pytrends.request import TrendReq #https://github.com/GeneralMills/pytrends
 pytrend = TrendReq(hl='en-US',tz=360,retries=20,backoff_factor=0.5)
 
 # have to perform pull in batches due to google trends limit of 5 terms
+symptoms_topic = ['Anosmia','Sore Throat','Diarrhea','Appetite','Shortness of breath']
+
 symptoms = ['smell', 'taste', 'sore', 'throat', 'upset stomach', 'diarrhea', 
        'no appetite', 'difficulty breathing', 'fever', 'sore eyes', 
        'runny nose', 'fatigue', 'dry cough', 'chest pain', 'blue face']
@@ -24,7 +26,7 @@ symptoms_3 = symptoms[10:len(symptoms)]
 
 # batch 1 
 pytrend.build_payload(kw_list=symptoms_1)
-df1 = pytrend.get_historical_interest(keywords=symptoms_1,year_start=2019,month_start=12,hour_start=0,day_start=1,year_end=2020,month_end=3,hour_end=23,day_end=31)
+pytrends.interest_over_time()
 print(df1.head(20))
 
 # # batch 2 
