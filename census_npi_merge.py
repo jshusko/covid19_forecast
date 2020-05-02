@@ -18,6 +18,9 @@ The NPI and covid19 data is updated daily so we this script will pull from the
 website, but the Census data is stored in this file's github repository: -
 https://github.com/jshusko/covid19_googleTrends """ 
 
+# grab and select appropriate columns for census data
+df_census = pd.read_csv("co-est2019-alldata-utf8.csv"); print(df_census.head(20))
+
 # grab and select appropriate columns for covid 19 data
 url_covid19 = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv"
 df_covid19 = pd.read_csv(url_covid19, error_bad_lines=False) 
@@ -43,8 +46,8 @@ df_npi = df_npi[['fip_code','npi','start_date']]; print(df_npi.head(20))
 
 # create new data frame with a columns for npi types and their values as days
 # past mar 12, 2020
-npis = np.unique(df_npi['npi']); print("\n\n npis:",npis) # list of npi policies 
+npis = np.unique(df_npi['npi']); print("\n\n npis: ",npis) # list of npi policies 
 
 # first: calculate days past
-base = parser.parse('03/12/2020'); print("\n\n base date",base)
+base = parser.parse('03/12/2020'); print("\n\n base date: ",base)
 #df['start_date'] = pd.datetime(df['start_date']) print(df.head(20))
