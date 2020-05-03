@@ -18,10 +18,30 @@ The NPI and covid19 data is updated daily so we this script will pull from the
 website, but the Census data is stored in this file's github repository: -
 https://github.com/jshusko/covid19_googleTrends """ 
 
-# grab and select appropriate columns for census data
-df_census = pd.read_csv("co-est2019-alldata-utf8.csv"); print(df_census.head(20))
+## prepare census data for join
+df_census = pd.read_csv("co-est2019-alldata-utf8.csv"); 
+df_census['STATE'] = df_census['STATE'].apply(str)
+df_census['COUNTY'] = df_census['COUNTY'].apply(str)
 
-# grab and select appropriate columns for covid 19 data
+def create_fip(row):
+    st = row['STATE']
+    ct = row['COUNTY']
+    if int(st)<10:
+    	st_prime = "0" + st
+    else:
+    	st_prime = st
+    if int(ct)>99:
+    	new = st_prime + ct
+    elif (int(ct)>9)&(int(ct)<100):
+    	new = st_prime + "0" + ct
+    else:
+    	new = st_prime + "00" + ct
+    return new
+
+df_census['FIPS'] = df_census.apply(lambda row: create_fip(row), axis=1)
+print(df_census.head(20))
+
+## prepare covid 19 data for join
 url_covid19 = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv"
 df_covid19 = pd.read_csv(url_covid19, error_bad_lines=False) 
 colnames = [ 'FIPS',
@@ -37,12 +57,18 @@ colnames = [ 'FIPS',
 '4/5/20','4/6/20','4/7/20','4/8/20','4/9/20','4/10/20','4/11/20','4/12/20','4/13/20',
 '4/14/20','4/15/20','4/16/20','4/17/20','4/18/20','4/19/20','4/20/20','4/21/20',
 '4/22/20','4/23/20','4/24/20','4/25/20','4/26/20','4/27/20','4/28/20','4/29/20']
-df_covid19 = df_covid19[colnames]; print(df_covid19.head(20))
+df_covid19 = df_covid19[colnames]
+df_covid19['FIPS'] = ((df_covid19['FIPS'].fillna(0.0)).apply(int)).apply(str)
+print(df_covid19.head(20))
 
-# grab and select appropriate columns for NPI data
+## prepare NPI data for join
 url_npi = 'https://raw.githubusercontent.com/Keystone-Strategy/covid19-intervention-data/master/complete_npis_raw_policies.csv'
 df_npi = pd.read_csv(url_npi, error_bad_lines=False) 
-df_npi = df_npi[['fip_code','npi','start_date']]; print(df_npi.head(20))
+df_npi = df_npi[['fip_code','npi','start_date']]
+df_npi.columns = ['FIPS','npi','start_date']; 
+df_npi['FIPS'] = df_npi['FIPS'].apply(str) 
+print(df_npi.head(20))
+print(df_npi.dtypes)
 
 # create new data frame with a columns for npi types and their values as days
 # past mar 12, 2020
