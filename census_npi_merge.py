@@ -3,20 +3,21 @@ import numpy as np
 from datetime import datetime 
 from dateutil import parser
 
-### Author: Jacob Shusko (jws383@cornell.edu) ### Date: April 27, 2020 ### 
+### Author: Jacob Shusko (jws383@cornell.edu) 
+### Date: April 27, 2020 ### 
 
 """ This script joins together demographic data from the Census with the NPI 
 policy data on the fips code.
 
-Links: -
-https://github.com/Keystone-Strategy/covid19-intervention-data/blob/master/complete_npis_raw_policies.csv
--
-https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/
--
-https://github.com/CSSEGISandData/COVID-19/blob/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv
+Links: 
+- https://github.com/Keystone-Strategy/covid19-intervention-data/blob/master/complete_npis_raw_policies.csv
+- https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/
+- https://github.com/CSSEGISandData/COVID-19/blob/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv
+
 The NPI and covid19 data is updated daily so we this script will pull from the
-website, but the Census data is stored in this file's github repository: -
-https://github.com/jshusko/covid19_googleTrends """ 
+website, but the Census data is stored in this file's github repository: 
+- https://github.com/jshusko/covid19_googleTrends 
+""" 
 
 ## prepare census data for join
 df_census = pd.read_csv("co-est2019-alldata-utf8.csv"); 
@@ -66,14 +67,24 @@ url_npi = 'https://raw.githubusercontent.com/Keystone-Strategy/covid19-intervent
 df_npi = pd.read_csv(url_npi, error_bad_lines=False) 
 df_npi = df_npi[['fip_code','npi','start_date']]
 df_npi.columns = ['FIPS','npi','start_date']; 
-df_npi['FIPS'] = df_npi['FIPS'].apply(str) 
+df_npi['FIPS'] = df_npi['FIPS'].apply(str)  
+
+# convert to datetime
+base_str = "3/1/2020"; print("\n\n base date: ",base_str)
+end_str = "4/29/2020"; print("\n\n end date: ",end_str)
+base = pd.to_datetime(base_str)
+end = pd.to_datetime(end_str)
+df_npi['start_date'] = df_npi['start_date'].fillna(end_str)
+df_npi.loc[df_npi['start_date'] == 'None in Place', 'start_date'] = end_str
+df_npi.loc[df_npi['start_date'] == 'Start', 'start_date'] = end_str
+df_npi['start_date'] = pd.to_datetime(df_npi['start_date'],infer_datetime_format=True,errors="coerce"); print(df_npi.head(20))
 print(df_npi.head(20))
-print(df_npi.dtypes)
 
-# create new data frame with a columns for npi types and their values as days
-# past mar 12, 2020
-npis = np.unique(df_npi['npi']); print("\n\n npis: ",npis) # list of npi policies 
+# take difference 
+df_npi['days_in_effect'] = df_npi.apply(lambda row: (end - row['start_date']).days, axis=1)
+#df_npi['days_from_base'] = df_npi.apply(lambda row: (row['start_date'] - base).days, axis=1)
+print(df_npi.head(20))
 
-# first: calculate days past
-base = parser.parse('03/12/2020'); print("\n\n base date: ",base)
-#df['start_date'] = pd.datetime(df['start_date']) print(df.head(20))
+# pivot on npis
+df_npi_pivot = df_npi.pivot(index="FIPS",columns="npi",values='days_in_effect') 
+print(df_npi_pivot.head(20))
