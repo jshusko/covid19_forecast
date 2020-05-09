@@ -42,7 +42,9 @@ def create_fip(row):
 df_census['FIPS'] = df_census.apply(lambda row: create_fip(row), axis=1)
 df_census = df_census.set_index('FIPS')
 print("\n\nCensus index: \n",df_census.index)
-print("\n\nCensus dataset: \n",df_census.head(20))
+print("\n\nCensus columns: \n",df_census.columns)
+print("\n\nCensus dataset: \n",df_census)
+print("\n\n-------------------------------------------------------------------------------------------------------------------\n\n")
 
 ## prepare covid 19 data for join
 url_covid19 = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv"
@@ -59,7 +61,8 @@ colnames = [ 'FIPS',
 '3/28/20','3/29/20','3/30/20','3/31/20','4/1/20','4/2/20','4/3/20','4/4/20',
 '4/5/20','4/6/20','4/7/20','4/8/20','4/9/20','4/10/20','4/11/20','4/12/20','4/13/20',
 '4/14/20','4/15/20','4/16/20','4/17/20','4/18/20','4/19/20','4/20/20','4/21/20',
-'4/22/20','4/23/20','4/24/20','4/25/20','4/26/20','4/27/20','4/28/20','4/29/20']
+'4/22/20','4/23/20','4/24/20','4/25/20','4/26/20','4/27/20','4/28/20','4/29/20',
+'4/30/20','5/1/20','5/2/20','5/3/20','5/4/20','5/5/20','5/6/20','5/7/20','5/8/20']
 df_covid19 = df_covid19[colnames]
 
 # format FIPS, set index, convert to datetime
@@ -72,7 +75,9 @@ df_covid19 = df_covid19.set_index('FIPS')
 df_covid19.columns = ['DATE','CUMULATIVE DEATHS']
 df_covid19['DATE'] = pd.to_datetime(df_covid19['DATE'],infer_datetime_format=True,errors="coerce")
 print("\n\nCovid 19 index: \n",df_covid19.index)
-print("\n\nCovid 19 dataset: \n", df_covid19.head(100))
+print("\n\nCovid 19 columns: \n", df_covid19.columns)
+print("\n\nCovid 19 dataset: \n", df_covid19)
+print("\n\n-------------------------------------------------------------------------------------------------------------------\n\n")
 
 
 ## prepare NPI data for join
@@ -84,7 +89,9 @@ df_npi['FIPS'] = df_npi['FIPS'].apply(str)
 
 # convert to datetime, take difference
 base_str = "3/1/2020"
-end_str = "4/29/2020"
+end_str = colnames[len(colnames)-1]
+print(end_str)
+
 base = pd.to_datetime(base_str)
 end = pd.to_datetime(end_str)
 df_npi['start_date'] = df_npi['start_date'].fillna(end_str)
@@ -93,12 +100,14 @@ df_npi.loc[df_npi['start_date'] == 'Start', 'start_date'] = end_str
 df_npi['start_date'] = pd.to_datetime(df_npi['start_date'],infer_datetime_format=True,errors="coerce")
 #df_npi['days_from_base'] = df_npi.apply(lambda row: (row['start_date'] - base).days, axis=1)
 
-# pivot on npis
+# pivot on npis and fill na with end date
 df_npi_pivot = df_npi.pivot(index="FIPS",columns="npi",values='start_date')
-print(df_npi_pivot.columns[1])
-print("\n\nNPI index: \n", df_npi_pivot.columns)
+u = df_npi_pivot.select_dtypes(include=['datetime'])
+df_npi_pivot[u.columns] = u.fillna(end)
 print("\n\nNPI index: \n",df_npi_pivot.index)
-print("\n\nNPI dataset: \n",df_npi_pivot.head(20))
+print("\n\nNPI columns: \n", df_npi_pivot.columns)
+print("\n\nNPI dataset: \n",df_npi_pivot)
+print("\n\n-------------------------------------------------------------------------------------------------------------------\n\n")
 
 
 ## join together datasets
@@ -106,8 +115,7 @@ df_master = df_covid19.join(df_census,how='inner')
 df_master = df_master.join(df_npi_pivot,how='inner')
 for i in df_npi_pivot.columns:
 	df_master[str(i)] = df_master.apply(lambda row: max((row['DATE'] - row[str(i)]).days,0.0), axis=1)
-print("\n\nMaster dataset columns: \n",df_master.columns)
-print("\n\nMaster dataset: \n",df_master)
 print("\n\nMaster dataset index: \n",df_master.index)
 print("\n\nMaster dataset columns: \n",df_master.columns)
-df_master.to_csv("master.csv")
+print("\n\nMaster dataset: \n",df_master)
+df_master.to_csv("".join(["master_",end_str.replace('/','-'),".csv"]))
