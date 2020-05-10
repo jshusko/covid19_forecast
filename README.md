@@ -1,4 +1,4 @@
-# covid19_forecast
+# U.S. Counties Covid-19 forecasting using demographic and NPI data
 Timeseries forecasting for covid 19 risk by county level using demographic and NPI policy data. 
 Datasets used:
  - https://github.com/Keystone-Strategy/covid19-intervention-data/
