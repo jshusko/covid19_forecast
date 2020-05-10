@@ -14,9 +14,9 @@ from dateutil import parser
 	- https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/
 	- https://github.com/CSSEGISandData/COVID-19/blob/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv
 
-	The NPI and covid19 data is updated daily so we this script will pull from the
-	website, but the Census data is stored in this file's github repository: 
-	- https://github.com/jshusko/covid19_googleTrends 
+	The NPI and covid19 data is updated daily so this script will pull from 
+    the website, but the Census data is stored in this file's github repository 
+    with relative path "./co-est2019-alldata-utf8.csv"
 """ 
 
 ## prepare census data for join
