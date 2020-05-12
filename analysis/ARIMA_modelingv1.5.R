@@ -2,6 +2,7 @@ library(dplyr)
 library(ggplot2)
 library(forecast)
 library(anytime)
+library(tibble)
 library(ggpubr)
 
 ### PREPROCESS ### 
@@ -9,30 +10,23 @@ df_full <- read.csv("./preprocess/master_5-8-20.csv") %>% as_tibble()
 df_full
 
 ### Individual County Simple Model ###
-la = 6037
-ny = 36061
-cook = 17031
-gwinnett = 13135
-harris = 48201
-tompkins = 36109
-suffolk = 25025
-hennepin = 27053 
-hillsborough = 12057
-counties = c(la,ny,cook,gwinnett,harris,tompkins,suffolk,hennepin,hillsborough)
 
-forecast_interval = 21
+counties = list(list('Los Angeles County',6037),list('New York County',36061),list('Cook County',17031),list('Gwinnett County',13135),
+             list('Harris County',48201),list('King County',53033),list('Suffolk County',25025),list('Hennepin County',27053),list('Hillsborough County',12057))
+
 forecast_interval = 21
 plist <- list()
 j <- 1 
 for (i in counties) {
-  df_deaths <- select(df_full,FIPS,DATE,CUMULATIVE.DEATHS) %>% filter(FIPS==i) %>% as_tibble()
+  df_deaths <- select(df_full,FIPS,DATE,CUMULATIVE.DEATHS) %>% filter(FIPS==i[2]) %>% as_tibble()
   df_deaths$DATE <- as.Date(df_deaths$DATE, format = "%Y-%m-%d")
-  dates_ts <- as.ts(df_deaths$DATE)
-  ts_train <- ts(data=df_deaths$CUMULATIVE.DEATHS, start=min(dates_ts), end=max(dates_ts)-forecast_interval)
-  ts_actual <- ts(data=df_deaths$CUMULATIVE.DEATHS, start=min(dates_ts), end=max(dates_ts))
-  fit <- auto.arima(ts_train,stepwise = FALSE, approximation = FALSE)
+  ts_train <- ts(df_full$CUMULATIVE.DEATHS, start=c(2020,22),end=c(2020,128-forecast_interval),frequency=365)
+  ts_actual <- ts(df_full$CUMULATIVE.DEATHS, start=c(2020,22),end=c(2020,128),frequency=365)
+  #ts_train <- ts(data=df_deaths$CUMULATIVE.DEATHS, start=min(df_deaths$DATE), end=max(df_deaths$DATE)-forecast_interval)
+  #ts_actual <- ts(data=df_deaths$CUMULATIVE.DEATHS, start=min(dates_ts), end=max(dates_ts))
+  fit <- auto.arima(ts_train,stepwise=FALSE, approximation=FALSE)
   forecast <- forecast(fit,h=forecast_interval)
-  plot <- autoplot(forecast) + autolayer(ts_actual)
+  plot <- autoplot(forecast,xlab='Months',ylab='Deaths',main=i[1]) + autolayer(ts_actual) 
   name <- paste("plot",j,sep="_")
   tmp <- list(plot)
   plist[name] <- tmp
