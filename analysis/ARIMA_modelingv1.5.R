@@ -35,39 +35,18 @@ for (i in counties) {
   j <- j + 1
 }
 
-ggarrange(plist[1]$plot_1,plist[2]$plot_2,plist[3]$plot_3,plist[4]$plot_4,plist[5]$plot_5,plist[6]$plot_6,plist[7]$plot_7,plist[8]$plot_8,plist[9]$plot_9)
-
-### All Counties ARIMA (w/o plotting) ###
-# training is approximate and stepwise to speed up 
-df_subset <- select(df_full,FIPS,DATE,CUMULATIVE.DEATHS)
-df_subset$DATE <- as.Date(df_subset$DATE, format = "%Y-%m-%d")
-all_counties =  unique(df_full$FIPS)
-forecast_interval = 21 
-flist_subopt <- list() # fits
-elist_subopt <- list() # mse on forecast interval
-for (i in all_counties) {
-  df_deaths <- df_subset %>% filter(FIPS==i) %>% as_tibble()
-  df_deaths$DATE <- as.Date(df_deaths$DATE, format = "%Y-%m-%d")
-  ts_train <- ts(data=df_deaths$CUMULATIVE.DEATHS, start=c(2020,22), end=c(2020,128-forecast_interval),frequency=365)
-  ts_actual <- ts(data=df_deaths$CUMULATIVE.DEATHS, start=c(2020,22), end=c(2020,128),frequency=365)
-  fit <- auto.arima(ts_train,stepwise=TRUE, approximation=TRUE)
-  forecast <- forecast(fit,h=forecast_interval)
-  res <- tail(forecast$residuals,forecast_interval) %>% as.numeric()
-  mse <- sum(res^2)
-  flist_subopt[toString(i)] <- list(fit)
-  elist_subopt[toString(i)] <- mse
-}
 average_mse_subopt <- Reduce('+',elist)/length(elist) # average MSE over all counties in data set
 max_mse_subopt <- Reduce('max',elist) # max MSE over all counties in data set
+#ggarrange(plist[1]$plot_1,plist[2]$plot_2,plist[3]$plot_3,plist[4]$plot_4,plist[5]$plot_5,plist[6]$plot_6,plist[7]$plot_7,plist[8]$plot_8,plist[9]$plot_9)
 
 ### All Counties ARIMA (w/o plotting) ###
 # training is optimal
 df_subset <- select(df_full,FIPS,DATE,CUMULATIVE.DEATHS)
 df_subset$DATE <- as.Date(df_subset$DATE, format = "%Y-%m-%d")
 all_counties =  unique(df_full$FIPS)
-forecast_interval = 21 
-flist_subopt <- list() # fits
-elist_subopt <- list() # mse on forecast interval
+forecast_interval = 7
+flist_opt <- list() # fits
+elist_opt <- list() # mse on forecast interval
 for (i in all_counties) {
   df_deaths <- df_subset %>% filter(FIPS==i) %>% as_tibble()
   df_deaths$DATE <- as.Date(df_deaths$DATE, format = "%Y-%m-%d")
@@ -77,8 +56,9 @@ for (i in all_counties) {
   forecast <- forecast(fit,h=forecast_interval)
   res <- tail(forecast$residuals,forecast_interval) %>% as.numeric()
   mse <- sum(res^2)
-  flist_subopt[toString(i)] <- list(fit)
-  elist_subopt[toString(i)] <- mse
+  flist_opt[toString(i)] <- list(fit)
+  elist_opt[toString(i)] <- mse
 }
-average_mse_subopt <- Reduce('+',elist)/length(elist) # average MSE over all counties in data set
-max_mse_subopt <- Reduce('max',elist) # max MSE over all counties in data set
+average_mse_opt <- Reduce('+',elist_opt)/length(elist) # average MSE over all counties in data set
+max_mse_opt <- Reduce('max',elist_opt) # max MSE over all counties in data set
+average_mse_opt; max_mse_opt
