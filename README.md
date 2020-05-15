@@ -1,7 +1,17 @@
-# U.S. Counties Covid-19 forecasting using demographic and NPI data
-Timeseries forecasting for covid 19 risk by county level using demographic and NPI policy data. 
+# Covid-19 forecasting and Non-Pharmaceutical Interventions on county level data
+This is the repository for scripts and data used to write a paper studying using ARIMA models to forecast Covid-19 cumulative deaths on the county level, and tree-based methods to evaluate the relationship between county demographics and Non-Pharmaceutical Interventions (NPIs).
+This was a final project for ORIE 4740 at Cornell University, but feel free to use the datasets and models for further research.
+
 Datasets used:
- - https://github.com/Keystone-Strategy/covid19-intervention-data/
- - https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/
- - "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv"
+ - Time-Series of cumulative deaths for U.S. counties using NPI days in effect and demographics as additional features
+ - Demographic, health-related, and political features for each U.S. county
+ 
+Models:
+ - R script to run ARIMA models on Time-series data set
+ - Python notebook to run Random Forest on the extensive demographics data set
+ 
+ Contact us:
+ - Catherine Appleby (ORIE '21) at jws383@cornell.edu
+ - John Miller (ORIE '20) at jmm754@cornell.edu
+ - Jacob Shusko (ORIE/CS '21) at jws383@cornell.edu 
 
