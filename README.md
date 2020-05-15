@@ -8,7 +8,7 @@ Datasets used:
  
 Models:
  - [R script to run ARIMA models on Time-series data set](analysis/ARIMA_modelingv1.5.R)
- - [Python notebook to run Random Forest on the extensive demographics data set](analysis/'RF classifier vF'.ipynb)
+ - [Python notebook to run Random Forest on the extensive demographics data set](analysis/RF classifier vF.ipynb)
  
  Contact us:
  - Catherine Appleby (ORIE '21) at jws383@cornell.edu
