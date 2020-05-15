@@ -25,7 +25,7 @@ for (i in counties) {
   ts_actual <- ts(data=df_deaths$CUMULATIVE.DEATHS, start=c(2020,22), end=c(2020,128),frequency=365)
   fit <- auto.arima(ts_train,stepwise=FALSE, approximation=FALSE)
   forecast <- forecast(fit,h=forecast_interval)
-  plot <- autoplot(forecast,xlab='Months',ylab='Deaths',main=i[1]) + autolayer(ts_actual)
+  plot <- autoplot(forecast,main=i,ylab="Deaths") + autolayer(ts_actual,show.legend=FALSE)
   res <- tail(forecast$residuals,forecast_interval) %>% as.numeric()
   mse <- sum(res^2)
   name <- paste("plot",j,sep="_")
@@ -37,7 +37,19 @@ for (i in counties) {
 
 average_mse_subopt <- Reduce('+',elist)/length(elist) # average MSE over all counties in data set
 max_mse_subopt <- Reduce('max',elist) # max MSE over all counties in data set
-#ggarrange(plist[1]$plot_1,plist[2]$plot_2,plist[3]$plot_3,plist[4]$plot_4,plist[5]$plot_5,plist[6]$plot_6,plist[7]$plot_7,plist[8]$plot_8,plist[9]$plot_9)
+ggarrange(plist[1]$plot_1,plist[2]$plot_2,plist[3]$plot_3,plist[4]$plot_4,plist[5]$plot_5,plist[6]$plot_6,plist[7]$plot_7,plist[8]$plot_8,plist[9]$plot_9,label.x="test")
+
+par(mfrow=c(3,3))
+acf1 = acf(flist[1]$plot_1$residuals,main=counties[1])
+acf2 = acf(flist[2]$plot_2$residuals,main=counties[2])
+acf3 = acf(flist[3]$plot_3$residuals,main=counties[3])
+acf4 = acf(flist[4]$plot_4$residuals,main=counties[4])
+acf5 = acf(flist[5]$plot_5$residuals,main=counties[5])
+acf6 = acf(flist[6]$plot_6$residuals,main=counties[6])
+acf7 = acf(flist[7]$plot_7$residuals,main=counties[7])
+acf8 = acf(flist[8]$plot_8$residuals,main=counties[8])
+acf9 = acf(flist[9]$plot_9$residuals,main=counties[9])
+
 
 ### All Counties ARIMA (w/o plotting) ###
 # training is optimal
