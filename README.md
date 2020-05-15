@@ -10,7 +10,7 @@ Models:
  - [R script to run ARIMA models on Time-series data set](analysis/ARIMA_modelingv1.5.R)
  - [Python notebook to run Random Forest on the extensive demographics data set](analysis/RF_classifier_vF.ipynb)
  
- Contact us:
+ For citing the repository, please cite the [paper](documents/Covid19Forecasting_NPIs_final.pdf). If you have any questions, contact us:
  - Catherine Appleby (ORIE '21) at jws383@cornell.edu
  - John Miller (ORIE '20) at jmm754@cornell.edu
  - Jacob Shusko (ORIE/CS '21) at jws383@cornell.edu 
