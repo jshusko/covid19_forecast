@@ -1,5 +1,5 @@
 # Covid-19 forecasting and Non-Pharmaceutical Interventions on county level data
-This is the repository for scripts and data used to write a [paper](documents/Covid19Forecasting.pdf) studying using ARIMA models to forecast Covid-19 cumulative deaths on the county level, and tree-based methods to evaluate the relationship between county demographics and Non-Pharmaceutical Interventions (NPIs).
+This is the repository for scripts and data used to write a [paper](documents/Covid19Forecasting_NPIs_final.pdf) studying using ARIMA models to forecast Covid-19 cumulative deaths on the county level, and tree-based methods to evaluate the relationship between county demographics and Non-Pharmaceutical Interventions (NPIs).
 This was a final project for ORIE 4740 at Cornell University, but feel free to use the datasets and models for further research.
 
 Datasets used:
